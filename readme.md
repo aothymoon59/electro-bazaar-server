@@ -1,4 +1,4 @@
-## Mongoose Express Starter Pack
+## Electric gadgets Management Dashboard
 
 ### Step 1
 
