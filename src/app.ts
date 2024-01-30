@@ -8,11 +8,10 @@ app.use(cors());
 
 // application routes
 
-
 const serverController = (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to Gadget Server',
+    message: 'Welcome to Electronics Gadget Server',
   });
 };
 
