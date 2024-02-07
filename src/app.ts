@@ -21,4 +21,9 @@ const serverController = (req: Request, res: Response) => {
 
 app.get('/', serverController);
 
+app.use(globalErrorHandler);
+
+//Not Found
+app.use(notFound);
+
 export default app;
