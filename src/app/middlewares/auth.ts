@@ -22,10 +22,10 @@ const auth = () => {
       config.jwt_access_secret as string,
     ) as JwtPayload;
 
-    const { userId } = decoded;
+    const { id } = decoded;
 
     // checking if the user is exist
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
 
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
