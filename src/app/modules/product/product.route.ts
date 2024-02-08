@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import productControllers from './product.controller';
+import { productControllers } from './product.controller';
 import validateRequest from '../../middlewares/validateRequest';
-import productValidations from './product.validation';
+import { productValidations } from './product.validation';
 import auth from '../../middlewares/auth';
 
 const router = Router();
@@ -37,5 +37,4 @@ router.delete(
   productControllers.deleteMultipleProducts,
 );
 
-const ProductRoutes = router;
-export default ProductRoutes;
+export const ProductRoutes = router;

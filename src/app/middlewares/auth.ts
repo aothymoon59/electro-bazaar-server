@@ -5,7 +5,7 @@ import config from '../config';
 import AppError from '../errors/AppError';
 
 import catchAsync from '../utils/catchAsync';
-import User from '../modules/user/user.model';
+import { User } from '../modules/user/user.model';
 
 const auth = () => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {

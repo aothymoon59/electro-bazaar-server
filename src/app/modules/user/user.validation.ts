@@ -14,5 +14,7 @@ const loginValidationSchema = z.object({
   }),
 });
 
-const UserValidations = { createUserValidationSchema, loginValidationSchema };
-export default UserValidations;
+export const UserValidations = {
+  createUserValidationSchema,
+  loginValidationSchema,
+};

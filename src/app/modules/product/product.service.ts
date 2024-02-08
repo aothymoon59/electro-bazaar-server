@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { generateQuery } from '../../utils/generateQuery';
 import { IProduct } from './product.interface';
-import Product from './product.model';
+import { Product } from './product.model';
 
 import mongoose from 'mongoose';
 
@@ -13,28 +13,23 @@ const createProductIntoDb = async (payload: IProduct) => {
   return result;
 };
 
-// TODO: modify response here
 const updateProductIntoDb = async (id: string, payload: IProduct) => {
   const { features, ...remainingData } = payload;
   const modifiedData: any = { ...remainingData };
-  //   console.log({ payload });
-  //   console.log({ modifiedData });
   if (features && Object.keys(features).length) {
     for (const [key, value] of Object.entries(features)) {
       modifiedData[`features.${key}`] = value;
     }
   }
-  //   console.log({ modifiedData });
 
-  const result = await Product.findByIdAndUpdate(id, {
-    $set: { ...modifiedData },
-  });
-  //   console.log(
-  //     '30***************',
-  //     await Product.findByIdAndUpdate(id, {
-  //       $set: { ...modifiedData },
-  //     }),
-  //   );
+  const result = await Product.findByIdAndUpdate(
+    id,
+    {
+      $set: { ...modifiedData },
+    },
+    { new: true },
+  );
+
   return result;
 };
 const getProductsFromDb = async (query: any) => {
@@ -71,7 +66,7 @@ const deleteMultipleProductsFromDb = async (productIds: string[]) => {
   return result;
 };
 
-const productServices = {
+export const productServices = {
   createProductIntoDb,
   updateProductIntoDb,
   getProductsFromDb,
@@ -79,4 +74,3 @@ const productServices = {
   deleteProductFromDb,
   deleteMultipleProductsFromDb,
 };
-export default productServices;

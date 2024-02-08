@@ -1,4 +1,4 @@
-import User from './user.model';
+import { User } from './user.model';
 import { Response } from 'express';
 
 import { ILoginUser, IRegisterUser } from './user.interface';
@@ -33,6 +33,4 @@ const loginUser = async (payload: ILoginUser, res: Response) => {
   sendToken(isUserExists, res, 'login successfully');
 };
 
-const UserServices = { createUserIntoDb, loginUser };
-
-export default UserServices;
+export const UserServices = { createUserIntoDb, loginUser };

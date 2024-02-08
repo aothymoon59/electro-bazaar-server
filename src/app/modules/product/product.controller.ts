@@ -1,7 +1,7 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import productServices from './product.service';
+import { productServices } from './product.service';
 
 const createProduct = catchAsync(async (req, res) => {
   const result = await productServices.createProductIntoDb(req.body);
@@ -69,7 +69,7 @@ const deleteMultipleProducts = catchAsync(async (req, res) => {
   });
 });
 
-const productControllers = {
+export const productControllers = {
   createProduct,
   updateProduct,
   getProducts,
@@ -77,4 +77,3 @@ const productControllers = {
   deleteProduct,
   deleteMultipleProducts,
 };
-export default productControllers;

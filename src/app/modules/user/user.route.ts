@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import UserController from './user.controller';
+import { UserController } from './user.controller';
 import validateRequest from '../../middlewares/validateRequest';
-import UserValidations from './user.validation';
+import { UserValidations } from './user.validation';
 
 const router = Router();
 
@@ -16,5 +16,4 @@ router.post(
   UserController.loginUser,
 );
 
-const UserRoutes = router;
-export default UserRoutes;
+export const UserRoutes = router;
