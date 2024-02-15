@@ -44,13 +44,13 @@ userSchema.methods.SignAccessToken = function () {
     { id: this._id, email: this.email, name: this.name },
     config.jwt_access_secret as string,
     {
-      expiresIn: '60d',
+      expiresIn: config.jwt_access_expires_in,
     },
   );
 };
 userSchema.methods.SignRefreshToken = function () {
   return jwt.sign({ id: this._id }, config.jwt_refresh_secret || '', {
-    expiresIn: '365d',
+    expiresIn: config.jwt_refresh_expires_in,
   });
 };
 
