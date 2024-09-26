@@ -14,7 +14,7 @@ app.use(
     origin: [
       'http://localhost:5173',
       'https://electro-mart.netlify.app',
-      'https://electrobazaar.vercel.app/',
+      'https://electrobazaar.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
