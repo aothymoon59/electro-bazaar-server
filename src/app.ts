@@ -11,7 +11,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://electro-mart.netlify.app'],
+    origin: [
+      'http://localhost:5173',
+      'https://electro-mart.netlify.app',
+      'https://electrobazaar.vercel.app/',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   }),
