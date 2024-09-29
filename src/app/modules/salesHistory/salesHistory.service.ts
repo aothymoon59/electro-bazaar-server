@@ -4,6 +4,7 @@ import { Product } from '../product/product.model';
 import { ISalesHistory } from './salesHistory.interface';
 import { SalesHistory } from './salesHistory.model';
 import { filterSalesHistory } from '../../utils/filterSalesHistory';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createSalesIntoDb = async (payload: ISalesHistory) => {
   const session = await mongoose.startSession();
@@ -42,6 +43,47 @@ const createSalesIntoDb = async (payload: ISalesHistory) => {
 const getSalesHistoryFromDB = async (query: Record<string, string>) => {
   const { filterBy } = query;
 
+  // Determine the startDate based on filterBy (day, week, month, year)
+  const startDate = filterSalesHistory(filterBy); // Assuming this is your helper function
+
+  const filterQuery: any = {};
+
+  // Apply date filter if startDate is available
+  if (startDate) {
+    filterQuery.buyDate = {
+      $gte: startDate,
+      $lt: new Date(),
+    };
+  }
+
+  // Create a QueryBuilder instance with the filtered query and incoming query parameters
+  const salesQuery = new QueryBuilder(SalesHistory.find(filterQuery), query);
+
+  // Use the query builder to handle search, filter, sort, paginate, and field selection
+  const salesDataQuery = salesQuery
+    .filter() // Apply any additional filters if passed in the query
+    .sort() // Apply sorting based on query
+    .paginate() // Handle pagination
+    .fields(); // Select specific fields if necessary
+
+  // Execute the built query
+  const result = await salesDataQuery.modelQuery.exec();
+
+  // Optionally, return pagination details using countTotal
+  const meta = await salesQuery.countTotal();
+
+  // Return the sales data along with pagination info (if needed)
+  return {
+    result,
+    meta,
+  };
+};
+
+/* const getSalesHistoryFromDB = async (query: Record<string, string>) => {
+  const { filterBy } = query;
+
+  console.log(query);
+
   const startDate = filterSalesHistory(filterBy);
   let filterQuery: any = {};
 
@@ -58,7 +100,7 @@ const getSalesHistoryFromDB = async (query: Record<string, string>) => {
   const salesData = await SalesHistory.find({ ...filterQuery });
 
   return salesData;
-};
+}; */
 
 // const getSalesHistoryFromDB = async (query: Record<string, string>) => {
 //   const { filterBy } = query;

@@ -20,7 +20,8 @@ const getSalesHistory = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Sales retrieved successfully',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
