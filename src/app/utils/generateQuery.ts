@@ -22,13 +22,19 @@ export const generateQuery = (query: any) => {
     filter = { ...filter, category: query?.category };
   }
   if (query?.operatingSystem !== undefined) {
-    filter = { ...filter, operatingSystem: query?.operatingSystem };
+    filter = {
+      ...filter,
+      operatingSystem: { $in: query.operatingSystem.split(',') },
+    };
   }
   if (query?.connectivity !== undefined) {
-    filter = { ...filter, connectivity: query?.connectivity };
+    filter = {
+      ...filter,
+      connectivity: { $in: query.connectivity.split(',') },
+    };
   }
   if (query?.powerSource !== undefined) {
-    filter = { ...filter, powerSource: query?.powerSource };
+    filter = { ...filter, powerSource: { $in: query.powerSource.split(',') } };
   }
   if (query?.cameraResolution !== undefined) {
     filter = {
