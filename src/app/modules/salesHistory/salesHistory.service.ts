@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { Product } from '../product/product.model';
 import { ISalesHistory } from './salesHistory.interface';
 import { SalesHistory } from './salesHistory.model';
+import { filterSalesHistory } from '../../utils/filterSalesHistory';
 
 const createSalesIntoDb = async (payload: ISalesHistory) => {
   const session = await mongoose.startSession();
@@ -41,42 +42,63 @@ const createSalesIntoDb = async (payload: ISalesHistory) => {
 const getSalesHistoryFromDB = async (query: Record<string, string>) => {
   const { filterBy } = query;
 
+  const startDate = filterSalesHistory(filterBy);
   let filterQuery: any = {};
 
-  if (filterBy === 'day') {
+  if (startDate) {
     filterQuery = {
       buyDate: {
-        $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
-        $lt: new Date(),
-      },
-    };
-  } else if (filterBy === 'week') {
-    filterQuery = {
-      buyDate: {
-        $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
-        $lt: new Date(),
-      },
-    };
-  } else if (filterBy === 'month') {
-    filterQuery = {
-      buyDate: {
-        $gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-        $lt: new Date(),
-      },
-    };
-  } else if (filterBy === 'year') {
-    filterQuery = {
-      buyDate: {
-        $gte: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+        $gte: startDate,
         $lt: new Date(),
       },
     };
   }
 
+  // If startDate is null, it means there's no filter, so return all data
   const salesData = await SalesHistory.find({ ...filterQuery });
 
   return salesData;
 };
+
+// const getSalesHistoryFromDB = async (query: Record<string, string>) => {
+//   const { filterBy } = query;
+
+//   let filterQuery: any = {};
+
+//   if (filterBy === 'day') {
+//     filterQuery = {
+//       buyDate: {
+//         $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+//         $lt: new Date(),
+//       },
+//     };
+//   } else if (filterBy === 'week') {
+//     filterQuery = {
+//       buyDate: {
+//         $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+//         $lt: new Date(),
+//       },
+//     };
+//   } else if (filterBy === 'month') {
+//     filterQuery = {
+//       buyDate: {
+//         $gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+//         $lt: new Date(),
+//       },
+//     };
+//   } else if (filterBy === 'year') {
+//     filterQuery = {
+//       buyDate: {
+//         $gte: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+//         $lt: new Date(),
+//       },
+//     };
+//   }
+
+//   const salesData = await SalesHistory.find({ ...filterQuery });
+
+//   return salesData;
+// };
 
 export const SalesHistoryServices = {
   createSalesIntoDb,
