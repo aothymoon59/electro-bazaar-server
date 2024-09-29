@@ -6,7 +6,7 @@ import { SalesHistory } from './salesHistory.model';
 import { filterSalesHistory } from '../../utils/filterSalesHistory';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-const createSalesIntoDb = async (payload: ISalesHistory) => {
+/* const createSalesIntoDb = async (payload: ISalesHistory) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -38,6 +38,58 @@ const createSalesIntoDb = async (payload: ISalesHistory) => {
   }
 
   return await SalesHistory.create(payload);
+}; */
+
+const createSalesIntoDb = async (payload: ISalesHistory) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    // Fetch the product by productId
+    const product = await Product.findById(payload.productId);
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    // Update product quantity
+    const updatedQuantity = product.quantity - payload.quantity;
+
+    if (updatedQuantity <= 0) {
+      // If quantity is zero or less, delete the product
+      await Product.findByIdAndDelete(payload.productId, { session });
+    } else {
+      // Otherwise, update the product quantity
+      await Product.findByIdAndUpdate(
+        payload.productId,
+        { $set: { quantity: updatedQuantity } },
+        { session },
+      );
+    }
+
+    // Fetch the last sales history record to get the latest `slNo`
+    const lastSales = await SalesHistory.findOne({}, { slNo: 1 })
+      .sort({ slNo: -1 })
+      .session(session);
+
+    // Set the `slNo` to 1 if no sales history exists, or increment it
+    const newSlNo = lastSales ? lastSales.slNo + 1 : 1;
+
+    // Add the `slNo` to the payload
+    payload.slNo = newSlNo;
+
+    // Commit the transaction and end the session
+    await session.commitTransaction();
+    await session.endSession();
+
+    // Create the new sales record with the updated `slNo`
+    return await SalesHistory.create(payload);
+  } catch (err: any) {
+    // Abort the transaction and end the session in case of an error
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
 };
 
 const getSalesHistoryFromDB = async (query: Record<string, string>) => {
