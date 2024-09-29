@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { generateQuery } from '../../utils/generateQuery';
 import { IProduct } from './product.interface';
 import { Product } from './product.model';
 
 import mongoose from 'mongoose';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createProductIntoDb = async (payload: IProduct) => {
   const result = await Product.create(payload);
@@ -32,18 +32,23 @@ const updateProductIntoDb = async (id: string, payload: IProduct) => {
 
   return result;
 };
-const getProductsFromDb = async (query: any) => {
-  const filter = generateQuery(query);
 
-  if (query?.searchTerms) {
-    const result = await Product.find({
-      name: { $regex: query?.searchTerms, $options: 'i' },
-    });
-    return result;
-  }
-  const result = await Product.find(filter);
-  return result;
+const getProductsFromDb = async (query: any) => {
+  const productQuery = new QueryBuilder(Product.find(), query)
+    .search(['name', 'brand'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await productQuery.modelQuery;
+  const meta = await productQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
+
 const getSingleProductFromDb = async (productId: string) => {
   const result = await Product.findById(productId);
   return result;
