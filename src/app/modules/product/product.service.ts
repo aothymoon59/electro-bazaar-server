@@ -7,6 +7,7 @@ import { Product } from './product.model';
 
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { productSearchableFields } from './product.constant';
 
 const createProductIntoDb = async (payload: IProduct) => {
   const result = await Product.create(payload);
@@ -35,7 +36,7 @@ const updateProductIntoDb = async (id: string, payload: IProduct) => {
 
 const getProductsFromDb = async (query: any) => {
   const productQuery = new QueryBuilder(Product.find(), query)
-    .search(['name', 'brand'])
+    .search(productSearchableFields)
     .filter()
     .sort()
     .paginate()

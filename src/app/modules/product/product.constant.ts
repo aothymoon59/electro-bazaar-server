@@ -12,3 +12,5 @@ export const fieldsToRemove = [
   'cameraResolution',
   'storage',
 ];
+
+export const productSearchableFields = ['name', 'brand'];
