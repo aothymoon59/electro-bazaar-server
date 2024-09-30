@@ -13,7 +13,7 @@ export const generateQuery = (query: any) => {
     filter = { ...filter, releaseDate: new Date(query?.releaseDate) };
   }
   if (query?.brand !== undefined) {
-    filter = { ...filter, brand: query?.brand };
+    filter = { ...filter, brand: query?.brand.toLowerCase() };
   }
   if (query?.modelNumber !== undefined) {
     filter = { ...filter, modelNumber: query?.modelNumber };

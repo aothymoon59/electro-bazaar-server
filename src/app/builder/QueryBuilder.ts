@@ -1,5 +1,7 @@
 import { FilterQuery, Query } from 'mongoose';
-import { generateQuery } from '../utils/generateQuery';
+// import { generateQuery } from '../utils/generateQuery';
+import { processQuery } from '../utils/manageProcessQuery';
+import { fieldsToRemove } from '../modules/product/product.constant';
 
 class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -39,7 +41,7 @@ class QueryBuilder<T> {
   //   return this;
   // }
 
-  filter() {
+  /* filter() {
     const queryObj = { ...this.query }; // Copy the original query object
 
     // Exclude fields not used for filtering
@@ -53,6 +55,29 @@ class QueryBuilder<T> {
     this.modelQuery = this.modelQuery.find({
       ...additionalFilters,
       ...queryObj,
+    } as FilterQuery<T>);
+
+    return this;
+  }
+ */
+
+  filter() {
+    const queryObj = { ...this.query }; // Copy the original query object
+
+    // Exclude fields not used for filtering
+    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    // Process the queryObj and get additional filters
+    const { additionalFilters, cleanedQueryObj } = processQuery(
+      queryObj,
+      fieldsToRemove,
+    );
+
+    // Combine additional filters with the existing query
+    this.modelQuery = this.modelQuery.find({
+      ...additionalFilters,
+      ...cleanedQueryObj,
     } as FilterQuery<T>);
 
     return this;
