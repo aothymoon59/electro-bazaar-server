@@ -16,6 +16,7 @@ router.post(
 router.put(
   '/update-product/:productId',
   auth(),
+  validateRequest(productValidations.updateProductValidationSchema),
   productControllers.updateProduct,
 );
 
