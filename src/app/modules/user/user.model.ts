@@ -20,13 +20,13 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['User', 'Manager', 'Customer'],
-      default: 'User',
+      enum: ['superAdmin', 'manager', 'user', 'customer'],
+      default: 'user',
     },
     status: {
       type: String,
-      enum: ['Active', 'Block'],
-      default: 'Active',
+      enum: ['active', 'blocked'],
+      default: 'active',
     },
     isDeleted: {
       type: Boolean,

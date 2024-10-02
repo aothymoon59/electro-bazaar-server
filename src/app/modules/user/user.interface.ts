@@ -4,8 +4,8 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: 'User' | 'Manager' | 'Customer' | 'SuperAdmin';
-  status: 'Active' | 'Block';
+  role: 'superAdmin' | 'manager' | 'user' | 'customer';
+  status: 'active' | 'blocked';
   isDeleted: boolean;
   // eslint-disable-next-line no-unused-vars
   comparePassword: (password: string) => Promise<boolean>;
@@ -17,7 +17,6 @@ export interface IRegisterUser {
   name: string;
   email: string;
   password: string;
-  role: 'User' | 'Manager' | 'Customer';
 }
 
 export interface ILoginUser {
