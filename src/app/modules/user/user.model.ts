@@ -18,6 +18,20 @@ const userSchema = new Schema<IUser>(
       type: String,
       select: false,
     },
+    role: {
+      type: String,
+      enum: ['User', 'Manager', 'Customer'],
+      default: 'User',
+    },
+    status: {
+      type: String,
+      enum: ['Active', 'Block'],
+      default: 'Active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
