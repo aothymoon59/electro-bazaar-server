@@ -22,7 +22,7 @@ router.put(
 );
 
 router.get(
-  '/get-added-products',
+  '/get-manage-products',
   auth(USER_ROLE.user, USER_ROLE.manager, USER_ROLE.superAdmin),
   productControllers.getAddedProducts,
 );
