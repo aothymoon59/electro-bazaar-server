@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from 'express';
-import { UserRoutes } from '../modules/user/user.route';
+// import { UserRoutes } from '../modules/user/user.route';
 import { ProductRoutes } from '../modules/product/product.route';
 import { SalesHistoryRoutes } from '../modules/salesHistory/salesHistory.route';
+import { AuthRoutes } from '../modules/auth/auth.route';
 
 type TRoute = {
   path: string;
@@ -11,7 +12,7 @@ type TRoute = {
 const router = Router();
 
 const moduleRoutes: TRoute[] = [
-  { path: '/auth', route: UserRoutes },
+  { path: '/auth', route: AuthRoutes },
   { path: '/products', route: ProductRoutes },
   { path: '/sales', route: SalesHistoryRoutes },
 ];

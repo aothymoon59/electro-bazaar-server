@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { UserController } from './user.controller';
+import { UserController } from './auth.controller';
 import validateRequest from '../../middlewares/validateRequest';
-import { UserValidations } from './user.validation';
+import { UserValidations } from './auth.validation';
 
 const router = Router();
 
@@ -22,4 +22,4 @@ router.post(
   UserController.refreshToken,
 );
 
-export const UserRoutes = router;
+export const AuthRoutes = router;

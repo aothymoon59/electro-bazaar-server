@@ -1,10 +1,19 @@
 import { model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import config from './../../config';
-import { IUser } from './user.interface';
+import { IUser, TPasswordHistory, UserModel } from './user.interface';
 
-const userSchema = new Schema<IUser>(
+const passwordHistorySchema = new Schema<TPasswordHistory>(
+  {
+    password: { type: String },
+  },
+  {
+    timestamps: true,
+    _id: false,
+  },
+);
+
+const userSchema = new Schema<IUser, UserModel>(
   {
     name: {
       type: String,
@@ -18,6 +27,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       select: false,
     },
+    passwordChangedAt: {
+      type: Date,
+    },
+    password_history: { type: [passwordHistorySchema] },
     role: {
       type: String,
       enum: ['superAdmin', 'manager', 'user', 'customer'],
@@ -36,36 +49,42 @@ const userSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
-userSchema.pre<IUser>('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
-  }
-  this.password = await bcrypt.hash(
-    this.password,
-    parseInt(config.bcrypt_salt_rounds || '10'),
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; //doc
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds || 10),
   );
   next();
 });
 
-userSchema.methods.comparePassword = async function (
-  enteredPassword: string,
-): Promise<boolean> {
-  return await bcrypt.compare(enteredPassword, this.password);
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
-userSchema.methods.SignAccessToken = function () {
-  return jwt.sign(
-    { id: this._id, email: this.email, name: this.name },
-    config.jwt_access_secret as string,
-    {
-      expiresIn: config.jwt_access_expires_in,
-    },
-  );
-};
-userSchema.methods.SignRefreshToken = function () {
-  return jwt.sign({ id: this._id }, config.jwt_refresh_secret || '', {
-    expiresIn: config.jwt_refresh_expires_in,
-  });
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
 };
 
-export const User = model<IUser>('User', userSchema);
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  delete user.password_history;
+
+  return user;
+};
+
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await User.findOne({ email }).select('+password');
+};
+
+export const User = model<IUser, UserModel>('User', userSchema);
