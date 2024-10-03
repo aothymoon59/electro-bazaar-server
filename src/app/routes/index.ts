@@ -2,7 +2,7 @@
 import { Router } from 'express';
 // import { UserRoutes } from '../modules/user/user.route';
 import { ProductRoutes } from '../modules/product/product.route';
-import { SalesHistoryRoutes } from '../modules/salesHistory/salesHistory.route';
+import { SalesHistoryRoutes } from '../modules/sales/salesHistory.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
 
 type TRoute = {

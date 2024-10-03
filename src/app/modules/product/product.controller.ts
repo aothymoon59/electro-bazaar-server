@@ -4,7 +4,11 @@ import httpStatus from 'http-status';
 import { productServices } from './product.service';
 
 const createProduct = catchAsync(async (req, res) => {
-  const result = await productServices.createProductIntoDb(req.body);
+  const { id: addedBy } = req.user;
+  const result = await productServices.createProductIntoDb({
+    ...req.body,
+    addedBy,
+  });
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -26,12 +30,25 @@ const updateProduct = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getProducts = catchAsync(async (req, res) => {
-  const result = await productServices.getProductsFromDb(req?.query);
+const getAddedProducts = catchAsync(async (req, res) => {
+  const { user } = req;
+  // console.log(role);
+  const result = await productServices.getAddedProductsFromDb(req?.query, user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'products retrieved successfully!',
+    meta: result?.meta,
+    data: result?.result,
+  });
+});
+
+const getAllProducts = catchAsync(async (req, res) => {
+  const result = await productServices.getAllProductsFromDb(req?.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'all products retrieved successfully!',
     meta: result?.meta,
     data: result?.result,
   });
@@ -73,7 +90,8 @@ const deleteMultipleProducts = catchAsync(async (req, res) => {
 export const productControllers = {
   createProduct,
   updateProduct,
-  getProducts,
+  getAddedProducts,
+  getAllProducts,
   getSingleProduct,
   deleteProduct,
   deleteMultipleProducts,

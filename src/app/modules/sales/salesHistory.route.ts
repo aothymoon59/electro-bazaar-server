@@ -3,6 +3,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import auth from '../../middlewares/auth';
 import { SalesHistoryValidations } from './salesHistory.validation';
 import { SalesHistoryControllers } from './salesHistory.controller';
+import { USER_ROLE } from '../user/user.constant';
 
 const router = Router();
 router.post(
@@ -13,7 +14,7 @@ router.post(
 );
 router.get(
   '/get-sales-history',
-  auth(),
+  auth(USER_ROLE.user, USER_ROLE.manager, USER_ROLE.superAdmin),
   SalesHistoryControllers.getSalesHistory,
 );
 

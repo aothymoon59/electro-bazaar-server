@@ -1,7 +1,8 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IProduct extends Document {
   name: string;
+  addedBy: Types.ObjectId;
   productImage: string;
   price: number;
   quantity: number;
