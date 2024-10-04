@@ -5,6 +5,8 @@ import { UserController } from './user.controller';
 
 const router = Router();
 
+router.get('/get-all', UserController.getAllUsers);
+
 router.get(
   '/me',
   auth(
