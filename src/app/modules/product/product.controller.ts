@@ -55,8 +55,10 @@ const getSingleProduct = catchAsync(async (req, res) => {
   });
 });
 const deleteProduct = catchAsync(async (req, res) => {
+  const { user: currentUser } = req;
   const result = await productServices.deleteProductFromDb(
     req?.params?.productId,
+    currentUser,
   );
   sendResponse(res, {
     success: true,

@@ -19,6 +19,15 @@ export interface IUser {
   isDeleted: boolean;
 }
 
+export interface IReqUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'superAdmin' | 'manager' | 'user' | 'customer';
+  iat: number;
+  exp: number;
+}
+
 export interface IRegisterUser {
   name: string;
   email: string;
