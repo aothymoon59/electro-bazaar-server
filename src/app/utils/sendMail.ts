@@ -1,23 +1,30 @@
-import nodemailer from 'nodemailer';
-import config from '../config';
+import nodemailer, { Transporter } from 'nodemailer';
+import ejs from 'ejs';
+import path from 'path';
+import config from './../config';
+import { IEmailOptions } from '../interface/mail.interface';
 
-export const sendEmail = async (to: string, html: string) => {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com.',
-    port: 587,
-    secure: config.env === 'production',
+const sendMail = async (options: IEmailOptions) => {
+  const transporter: Transporter = nodemailer.createTransport({
+    host: config.smtp_host,
+    port: parseInt(config.smtp_port || '587'),
     auth: {
-      // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-      user: 'moon137866@gmail.com',
-      pass: 'uxkw lvhw sukm myat',
+      user: config.smtp_mail,
+      pass: config.smtp_password,
     },
   });
 
+  const { email, subject, template, data } = options;
+
+  const templatePath = path.join(__dirname, '../mails', template);
+  const html: string = await ejs.renderFile(templatePath, data);
+
   await transporter.sendMail({
-    from: 'moon137866@gmail.com', // sender address
-    to, // list of receivers
-    subject: 'Reset your password within ten mins!', // Subject line
-    text: 'Forget Password Link', // plain text body
-    html, // html body
+    from: config.smtp_mail,
+    to: email,
+    subject,
+    html,
   });
 };
+
+export default sendMail;

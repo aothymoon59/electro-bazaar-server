@@ -5,12 +5,15 @@ import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import config from '../../config';
 import { createToken, verifyToken } from './auth.utils';
-import { sendEmail } from '../../utils/sendMail';
+// import { sendEmail } from '../../utils/sendMail';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import moment from 'moment';
 import sendResponse from '../../utils/sendResponse';
 import { Response } from 'express';
+import sendMail from '../../utils/sendMail';
+import ejs from 'ejs';
+import path from 'path';
 
 const createUserIntoDb = async (payload: IRegisterUser) => {
   const user = await User.isUserExistsByEmail(payload.email);
@@ -261,9 +264,27 @@ const forgetPassword = async (email: string) => {
 
   const resetUILink = `${config.reset_pass_ui_link}?id=${user._id}&token=${resetToken} `;
 
-  sendEmail(user.email, resetUILink);
-
-  // console.log(resetUILink);
+  // send mail
+  const date = moment(Date.now()).format('D MMM YYYY');
+  const data = {
+    date,
+    resetUILink,
+  };
+  await ejs.renderFile(
+    path.join(__dirname, '../../mails/forgot-password-mail.ejs'),
+    data,
+  );
+  try {
+    await sendMail({
+      email: user.email,
+      subject: 'Reset your password within ten mins!',
+      template: 'forgot-password-mail.ejs',
+      data,
+    });
+    return null;
+  } catch (error: any) {
+    throw new AppError(httpStatus.BAD_REQUEST, error.message);
+  }
 };
 
 const resetPassword = async (
