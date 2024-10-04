@@ -3,7 +3,6 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { User } from '../user/user.model';
 import { USER_ROLE, userSearchableFields } from './user.constant';
 
-// TODO: need to fix getAllManagersAndSuperadminsFromDb function
 const getAllManagersAndSuperadminsFromDb = async (query: any) => {
   const userQuery = new QueryBuilder(
     User.find({ role: { $in: [USER_ROLE.manager, USER_ROLE.superAdmin] } }),

@@ -8,7 +8,7 @@ const router = Router();
 router.get(
   '/managers-and-superadmins',
   auth(USER_ROLE.superAdmin, USER_ROLE.manager),
-  UserController.getAllUsers,
+  UserController.getAllManagersAndSuperadmins,
 );
 
 router.get(
