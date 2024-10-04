@@ -5,7 +5,11 @@ import { UserController } from './user.controller';
 
 const router = Router();
 
-router.get('/get-all', UserController.getAllUsers);
+router.get(
+  '/get-all',
+  auth(USER_ROLE.superAdmin, USER_ROLE.manager),
+  UserController.getAllUsers,
+);
 
 router.get(
   '/me',
