@@ -9,7 +9,6 @@ import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { productSearchableFields } from './product.constant';
 import { USER_ROLE } from '../user/user.constant';
-import { IReqUser } from '../user/user.interface';
 
 const createProductIntoDb = async (payload: IProduct) => {
   const result = await Product.create(payload);
@@ -19,7 +18,7 @@ const createProductIntoDb = async (payload: IProduct) => {
 const updateProductIntoDb = async (
   id: string,
   payload: IProduct,
-  currentUser: IReqUser,
+  currentUser: any,
 ) => {
   const product = await Product.findById(id);
 
@@ -78,10 +77,7 @@ const getSingleProductFromDb = async (productId: string) => {
   return result;
 };
 
-const deleteProductFromDb = async (
-  productId: string,
-  currentUser: IReqUser,
-) => {
+const deleteProductFromDb = async (productId: string, currentUser: any) => {
   const product = await Product.findById(productId);
 
   if (!product) {
