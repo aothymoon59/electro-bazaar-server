@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { productSearchableFields } from './product.constant';
 import { USER_ROLE } from '../user/user.constant';
+import { JwtPayload } from 'jsonwebtoken';
 
 const createProductIntoDb = async (payload: IProduct) => {
   const result = await Product.create(payload);
@@ -18,7 +19,7 @@ const createProductIntoDb = async (payload: IProduct) => {
 const updateProductIntoDb = async (
   id: string,
   payload: IProduct,
-  currentUser: any,
+  currentUser: JwtPayload,
 ) => {
   const product = await Product.findById(id);
 
@@ -77,7 +78,10 @@ const getSingleProductFromDb = async (productId: string) => {
   return result;
 };
 
-const deleteProductFromDb = async (productId: string, currentUser: any) => {
+const deleteProductFromDb = async (
+  productId: string,
+  currentUser: JwtPayload,
+) => {
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -100,7 +104,7 @@ const deleteProductFromDb = async (productId: string, currentUser: any) => {
 
 const deleteMultipleProductsFromDb = async (
   productIds: string[],
-  currentUser: any,
+  currentUser: JwtPayload,
 ) => {
   if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Product IDs are required');

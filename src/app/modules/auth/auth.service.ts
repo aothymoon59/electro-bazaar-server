@@ -5,6 +5,8 @@ import httpStatus from 'http-status';
 import config from '../../config';
 import { createToken, verifyToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendMail';
+import { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const createUserIntoDb = async (payload: IRegisterUser) => {
   const user = await User.isUserExistsByEmail(payload.email);
@@ -39,8 +41,6 @@ const createUserIntoDb = async (payload: IRegisterUser) => {
     accessToken,
     refreshToken,
   };
-
-  // sendToken(result, res, 'registration successfully');
 };
 
 const loginUser = async (payload: ILoginUser) => {
@@ -94,6 +94,57 @@ const loginUser = async (payload: ILoginUser) => {
     accessToken,
     refreshToken,
   };
+};
+
+const changePassword = async (
+  userData: JwtPayload,
+  payload: { oldPassword: string; newPassword: string },
+) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(userData.email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+  // checking if the user is already deleted
+
+  const isDeleted = user?.isDeleted;
+
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+  }
+
+  // checking if the user is blocked
+
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+  }
+
+  //checking if the password is correct
+
+  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
+    throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
+
+  //hash new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  await User.findOneAndUpdate(
+    {
+      id: userData.id,
+      role: userData.role,
+    },
+    {
+      password: newHashedPassword,
+      passwordChangedAt: new Date(),
+    },
+  );
+
+  return null;
 };
 
 const refreshToken = async (token: string) => {
@@ -191,6 +242,7 @@ const forgetPassword = async (email: string) => {
 export const AuthServices = {
   createUserIntoDb,
   loginUser,
+  changePassword,
   refreshToken,
   forgetPassword,
 };
