@@ -18,9 +18,11 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
+  const { user: currentUser } = req;
   const result = await productServices.updateProductIntoDb(
     req?.params?.productId,
     req.body,
+    currentUser,
   );
 
   sendResponse(res, {
