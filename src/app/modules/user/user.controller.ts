@@ -3,6 +3,19 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
+const getAllManagersAndSuperadmins = catchAsync(async (req, res) => {
+  const result = await UserServices.getAllManagersAndSuperadminsFromDb(
+    req?.query,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Users are retrieved successfully',
+    meta: result?.meta,
+    data: result.result,
+  });
+});
+
 const getAllUsers = catchAsync(async (req, res) => {
   const result = await UserServices.getAllUsersFromDb(req?.query);
   sendResponse(res, {
@@ -28,6 +41,7 @@ const getMe = catchAsync(async (req, res) => {
 });
 
 export const UserController = {
+  getAllManagersAndSuperadmins,
   getAllUsers,
   getMe,
 };
