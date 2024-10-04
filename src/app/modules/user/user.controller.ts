@@ -4,13 +4,13 @@ import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
 const getAllUsers = catchAsync(async (req, res) => {
-  const result = await UserServices.getAllUsersFromDb();
-
+  const result = await UserServices.getAllUsersFromDb(req?.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User is retrieved successfully',
-    data: result,
+    message: 'Users are retrieved successfully',
+    meta: result?.meta,
+    data: result.result,
   });
 });
 
