@@ -21,12 +21,6 @@ router.put(
   productControllers.updateProduct,
 );
 
-router.get(
-  '/get-manage-products',
-  auth(USER_ROLE.user, USER_ROLE.manager, USER_ROLE.superAdmin),
-  productControllers.getAddedProducts,
-);
-
 router.get('/get-products', productControllers.getAllProducts);
 
 router.get('/get-product/:productId', productControllers.getSingleProduct);

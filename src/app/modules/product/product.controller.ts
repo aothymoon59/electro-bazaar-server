@@ -30,18 +30,6 @@ const updateProduct = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getAddedProducts = catchAsync(async (req, res) => {
-  const { user } = req;
-  // console.log(role);
-  const result = await productServices.getAddedProductsFromDb(req?.query, user);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: 'products retrieved successfully!',
-    meta: result?.meta,
-    data: result?.result,
-  });
-});
 
 const getAllProducts = catchAsync(async (req, res) => {
   const result = await productServices.getAllProductsFromDb(req?.query);
@@ -90,7 +78,6 @@ const deleteMultipleProducts = catchAsync(async (req, res) => {
 export const productControllers = {
   createProduct,
   updateProduct,
-  getAddedProducts,
   getAllProducts,
   getSingleProduct,
   deleteProduct,
