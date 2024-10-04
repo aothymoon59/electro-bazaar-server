@@ -68,8 +68,10 @@ const deleteProduct = catchAsync(async (req, res) => {
   });
 });
 const deleteMultipleProducts = catchAsync(async (req, res) => {
+  const { user: currentUser } = req;
   const result = await productServices.deleteMultipleProductsFromDb(
     req?.body?.ids,
+    currentUser,
   );
   sendResponse(res, {
     success: true,

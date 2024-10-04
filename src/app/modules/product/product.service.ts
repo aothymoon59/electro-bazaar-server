@@ -98,17 +98,49 @@ const deleteProductFromDb = async (productId: string, currentUser: any) => {
   return result;
 };
 
-const deleteMultipleProductsFromDb = async (productIds: string[]) => {
-  if (!productIds) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'ids is required');
+const deleteMultipleProductsFromDb = async (
+  productIds: string[],
+  currentUser: any,
+) => {
+  if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Product IDs are required');
   }
 
-  const filter: any = {
+  const products = await Product.find({
     _id: {
       $in: productIds.map((id: string) => new mongoose.Types.ObjectId(id)),
     },
-  };
-  const result = await Product.deleteMany(filter);
+  });
+
+  if (!products || products.length === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No products found for the provided IDs',
+    );
+  }
+
+  if (currentUser.role === USER_ROLE.user) {
+    const unauthorizedProducts = products.filter((product) => {
+      return (
+        product.addedBy &&
+        product.addedBy.toString() !== currentUser.id.toString()
+      );
+    });
+
+    if (unauthorizedProducts.length > 0) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        'You are only allowed to delete products that you added.',
+      );
+    }
+  }
+
+  const result = await Product.deleteMany({
+    _id: {
+      $in: productIds.map((id: string) => new mongoose.Types.ObjectId(id)),
+    },
+  });
+
   return result;
 };
 
