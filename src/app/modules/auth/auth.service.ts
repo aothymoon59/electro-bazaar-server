@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from '../user/user.model';
 import { ILoginUser, IRegisterUser } from '../user/user.interface';
 import AppError from '../../errors/AppError';
@@ -7,6 +8,9 @@ import { createToken, verifyToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendMail';
 import { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import moment from 'moment';
+import sendResponse from '../../utils/sendResponse';
+import { Response } from 'express';
 
 const createUserIntoDb = async (payload: IRegisterUser) => {
   const user = await User.isUserExistsByEmail(payload.email);
@@ -97,6 +101,7 @@ const loginUser = async (payload: ILoginUser) => {
 };
 
 const changePassword = async (
+  res: Response,
   userData: JwtPayload,
   payload: { oldPassword: string; newPassword: string },
 ) => {
@@ -127,22 +132,44 @@ const changePassword = async (
   if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
     throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
 
+  const lastTwoPasswordsAndCurrent = user.password_history.slice(-3);
+
+  const isPasswordRepeated = lastTwoPasswordsAndCurrent.some((history) => {
+    return bcrypt.compareSync(payload?.newPassword, history.password);
+  });
+
+  if (isPasswordRepeated) {
+    const lastUseData: any = lastTwoPasswordsAndCurrent.find((history) => {
+      return bcrypt.compareSync(payload?.newPassword, history.password);
+    });
+
+    const formattedLastUsedDate = lastUseData
+      ? moment(lastUseData.createdAt).format('YYYY-MM-DD [at] hh-mm A')
+      : '';
+
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.BAD_REQUEST,
+      message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last changed on ${formattedLastUsedDate}).`,
+      data: null,
+    });
+  }
+
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds),
   );
 
-  await User.findOneAndUpdate(
-    {
-      id: userData.id,
-      role: userData.role,
-    },
-    {
-      password: newHashedPassword,
-      passwordChangedAt: new Date(),
-    },
-  );
+  const newPasswordObject = {
+    password: newHashedPassword,
+  };
+
+  await User.findByIdAndUpdate(userData.id, {
+    $set: { password: newHashedPassword },
+    $push: { password_history: newPasswordObject },
+    passwordChangedAt: new Date(),
+  });
 
   return null;
 };
