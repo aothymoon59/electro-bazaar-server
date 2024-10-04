@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
+import { UserServices } from './user.service';
 
 const getMe = catchAsync(async (req, res) => {
   const { email, role } = req.user;
