@@ -267,6 +267,7 @@ const forgetPassword = async (email: string) => {
 };
 
 const resetPassword = async (
+  res: Response,
   payload: { email: string; newPassword: string },
   token: string,
 ) => {
@@ -300,22 +301,55 @@ const resetPassword = async (
     throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!');
   }
 
+  const lastTwoPasswordsAndCurrent = user.password_history.slice(-3);
+
+  const isPasswordRepeated = lastTwoPasswordsAndCurrent.some((history) => {
+    return bcrypt.compareSync(payload?.newPassword, history.password);
+  });
+
+  if (isPasswordRepeated) {
+    const lastUseData: any = lastTwoPasswordsAndCurrent.find((history) => {
+      return bcrypt.compareSync(payload?.newPassword, history.password);
+    });
+
+    const formattedLastUsedDate = lastUseData
+      ? moment(lastUseData.createdAt).format('YYYY-MM-DD [at] hh-mm A')
+      : '';
+
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.BAD_REQUEST,
+      message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last changed on ${formattedLastUsedDate}).`,
+      data: null,
+    });
+  }
+
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds),
   );
 
-  await User.findOneAndUpdate(
-    {
-      id: decoded.id,
-      role: decoded.role,
-    },
-    {
-      password: newHashedPassword,
-      passwordChangedAt: new Date(),
-    },
-  );
+  const newPasswordObject = {
+    password: newHashedPassword,
+  };
+
+  await User.findByIdAndUpdate(decoded.id, {
+    $set: { password: newHashedPassword },
+    $push: { password_history: newPasswordObject },
+    passwordChangedAt: new Date(),
+  });
+
+  // await User.findOneAndUpdate(
+  //   {
+  //     id: decoded.id,
+  //     role: decoded.role,
+  //   },
+  //   {
+  //     password: newHashedPassword,
+  //     passwordChangedAt: new Date(),
+  //   },
+  // );
 };
 
 export const AuthServices = {
