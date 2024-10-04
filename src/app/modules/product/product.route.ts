@@ -26,12 +26,12 @@ router.get('/get-products', productControllers.getAllProducts);
 router.get('/get-product/:productId', productControllers.getSingleProduct);
 router.delete(
   '/delete-product/:productId',
-  auth(USER_ROLE.manager, USER_ROLE.superAdmin),
+  auth(USER_ROLE.user, USER_ROLE.manager, USER_ROLE.superAdmin),
   productControllers.deleteProduct,
 );
 router.delete(
   '/delete-multiple-products',
-  auth(USER_ROLE.manager, USER_ROLE.superAdmin),
+  auth(USER_ROLE.user, USER_ROLE.manager, USER_ROLE.superAdmin),
   productControllers.deleteMultipleProducts,
 );
 
