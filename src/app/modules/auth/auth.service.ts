@@ -362,17 +362,12 @@ const resetPassword = async (
     $push: { password_history: newPasswordObject },
     passwordChangedAt: new Date(),
   });
+};
 
-  // await User.findOneAndUpdate(
-  //   {
-  //     id: decoded.id,
-  //     role: decoded.role,
-  //   },
-  //   {
-  //     password: newHashedPassword,
-  //     passwordChangedAt: new Date(),
-  //   },
-  // );
+const getMe = async (email: string, role: string) => {
+  const result = await User.findOne({ email, role });
+
+  return result;
 };
 
 export const AuthServices = {
@@ -382,4 +377,5 @@ export const AuthServices = {
   refreshToken,
   forgetPassword,
   resetPassword,
+  getMe,
 };
