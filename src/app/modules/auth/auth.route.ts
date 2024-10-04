@@ -48,4 +48,15 @@ router.post(
   UserController.resetPassword,
 );
 
+router.get(
+  '/me',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.manager,
+    USER_ROLE.user,
+    USER_ROLE.customer,
+  ),
+  UserController.getMe,
+);
+
 export const AuthRoutes = router;
