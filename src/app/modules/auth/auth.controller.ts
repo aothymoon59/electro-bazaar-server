@@ -106,7 +106,7 @@ const getMe = catchAsync(async (req, res) => {
   });
 });
 
-export const AuthControllers = {
+export const AuthController = {
   createUser,
   loginUser,
   changePassword,

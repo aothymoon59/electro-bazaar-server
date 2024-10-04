@@ -4,6 +4,7 @@ import { Router } from 'express';
 import { ProductRoutes } from '../modules/product/product.route';
 import { SalesHistoryRoutes } from '../modules/sales/salesHistory.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
+import { UserRoutes } from '../modules/user/user.route';
 
 type TRoute = {
   path: string;
@@ -13,7 +14,7 @@ const router = Router();
 
 const moduleRoutes: TRoute[] = [
   { path: '/auth', route: AuthRoutes },
-  { path: '/users', route: AuthRoutes },
+  { path: '/users', route: UserRoutes },
   { path: '/products', route: ProductRoutes },
   { path: '/sales', route: SalesHistoryRoutes },
 ];
