@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { UserController } from './auth.controller';
+import { AuthController } from './auth.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserValidations } from './auth.validation';
 import auth from '../../middlewares/auth';
@@ -10,12 +10,12 @@ const router = Router();
 router.post(
   '/register-user',
   validateRequest(UserValidations.createUserValidationSchema),
-  UserController.createUser,
+  AuthController.createUser,
 );
 router.post(
   '/login',
   validateRequest(UserValidations.loginValidationSchema),
-  UserController.loginUser,
+  AuthController.loginUser,
 );
 
 router.post(
@@ -27,36 +27,36 @@ router.post(
     USER_ROLE.customer,
   ),
   validateRequest(UserValidations.changePasswordValidationSchema),
-  UserController.changePassword,
+  AuthController.changePassword,
 );
 
 router.post(
   '/refresh-token',
   validateRequest(UserValidations.refreshTokenValidationSchema),
-  UserController.refreshToken,
+  AuthController.refreshToken,
 );
 
 router.post(
   '/forget-password',
   validateRequest(UserValidations.forgetPasswordValidationSchema),
-  UserController.forgetPassword,
+  AuthController.forgetPassword,
 );
 
 router.post(
   '/reset-password',
   validateRequest(UserValidations.resetPasswordValidationSchema),
-  UserController.resetPassword,
+  AuthController.resetPassword,
 );
 
-router.get(
-  '/me',
-  auth(
-    USER_ROLE.superAdmin,
-    USER_ROLE.manager,
-    USER_ROLE.user,
-    USER_ROLE.customer,
-  ),
-  UserController.getMe,
-);
+// router.get(
+//   '/me',
+//   auth(
+//     USER_ROLE.superAdmin,
+//     USER_ROLE.manager,
+//     USER_ROLE.user,
+//     USER_ROLE.customer,
+//   ),
+//   UserController.getMe,
+// );
 
 export const AuthRoutes = router;

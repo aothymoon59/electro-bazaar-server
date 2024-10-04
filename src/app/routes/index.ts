@@ -13,6 +13,7 @@ const router = Router();
 
 const moduleRoutes: TRoute[] = [
   { path: '/auth', route: AuthRoutes },
+  { path: '/users', route: AuthRoutes },
   { path: '/products', route: ProductRoutes },
   { path: '/sales', route: SalesHistoryRoutes },
 ];
