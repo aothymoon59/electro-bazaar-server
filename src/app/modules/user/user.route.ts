@@ -37,4 +37,11 @@ router.post(
   UserController.changeStatus,
 );
 
+router.post(
+  '/change-role/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.manager),
+  validateRequest(UserValidations.changeRoleValidationSchema),
+  UserController.changeRole,
+);
+
 export const UserRoutes = router;
