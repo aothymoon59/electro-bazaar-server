@@ -53,9 +53,23 @@ const changeStatus = catchAsync(async (req, res) => {
   });
 });
 
+const changeRole = catchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  const result = await UserServices.changeRole(id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Role is updated successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   getAllManagersAndSuperadmins,
   getAllUsers,
   getMe,
   changeStatus,
+  changeRole,
 };
