@@ -59,7 +59,10 @@ const changeStatusValidationSchema = z.object({
 
 const changeRoleValidationSchema = z.object({
   body: z.object({
-    role: z.enum([...Object.values(USER_ROLE)] as [string, ...string[]]),
+    role: z.enum([USER_ROLE.customer, USER_ROLE.user, USER_ROLE.manager] as [
+      string,
+      ...string[],
+    ]),
   }),
 });
 
