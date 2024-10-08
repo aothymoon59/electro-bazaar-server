@@ -2,6 +2,8 @@ import { Router } from 'express';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from '../user/user.constant';
 import { UserController } from './user.controller';
+import validateRequest from '../../middlewares/validateRequest';
+import { UserValidations } from '../auth/auth.validation';
 
 const router = Router();
 
@@ -26,6 +28,13 @@ router.get(
     USER_ROLE.customer,
   ),
   UserController.getMe,
+);
+
+router.post(
+  '/change-status/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.manager),
+  validateRequest(UserValidations.changeStatusValidationSchema),
+  UserController.changeStatus,
 );
 
 export const UserRoutes = router;

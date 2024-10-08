@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { UserStatus } from '../user/user.constant';
 
 const createUserValidationSchema = z.object({
   body: z.object({
@@ -57,4 +58,5 @@ export const UserValidations = {
   refreshTokenValidationSchema,
   forgetPasswordValidationSchema,
   resetPasswordValidationSchema,
+  changeStatusValidationSchema,
 };
