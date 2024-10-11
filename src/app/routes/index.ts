@@ -5,6 +5,7 @@ import { ProductRoutes } from '../modules/product/product.route';
 import { SalesHistoryRoutes } from '../modules/sales/salesHistory.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
 import { UserRoutes } from '../modules/user/user.route';
+import CartRoutes from '../modules/cart/cart.routes';
 
 type TRoute = {
   path: string;
@@ -17,6 +18,7 @@ const moduleRoutes: TRoute[] = [
   { path: '/users', route: UserRoutes },
   { path: '/products', route: ProductRoutes },
   { path: '/sales', route: SalesHistoryRoutes },
+  { path: '/cart', route: CartRoutes },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
