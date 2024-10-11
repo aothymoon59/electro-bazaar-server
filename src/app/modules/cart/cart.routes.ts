@@ -4,7 +4,7 @@ import cartControllers from './cart.controller';
 import validateRequest from '../../middlewares/validateRequest';
 
 import auth from '../../middlewares/auth';
-import cartValidations from './cart.validation';
+import cartValidations from './cart.validations';
 
 const router = Router();
 
